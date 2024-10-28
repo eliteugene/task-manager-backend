@@ -1,0 +1,38 @@
+steps:
+  - name: 'node:18.8-alpine'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        # Install dependencies
+        yarn install
+
+  - name: 'node:18.8-alpine'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        # Build the application
+        yarn build
+
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args:
+      - 'app'
+      - 'deploy'
+      - 'app.yaml'
+      - '--quiet'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'gcr.io/task-manager-440013/task-manager'
+      - '.'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'gcr.io/task-manager-440013/task-manager'
+
+images:
+  - 'gcr.io/task-manager-440013/task-manager'
